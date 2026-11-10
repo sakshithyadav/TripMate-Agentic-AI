@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8F0F9">
+  <title>TripMate AI</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/effects.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true">
+    <span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span>
+    <svg class="route-bg" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice">
+      <path id="bgArc" class="trail" d="M-40 640 C 380 80, 980 80, 1480 540"/>
+      <g class="jet-g">
+        <path class="jet" d="M-12 -8 L14 0 L-12 8 L-6 0 Z"/>
+        <animateMotion dur="30s" repeatCount="indefinite" rotate="auto"><mpath href="#bgArc"/></animateMotion>
+      </g>
+    </svg>
+  </div>
+
+  <div id="flightOverlay" class="overlay" data-mode="draft" aria-live="polite">
+    <div class="overlay-card">
+      <div class="overlay-art">
+        <svg class="fly" viewBox="0 0 300 110">
+          <path id="ovArc" class="trail" d="M20 96 Q150 -34 280 96"/>
+          <path class="jet" d="M-10 -7 L12 0 L-10 7 L-5 0 Z">
+            <animateMotion dur="2.6s" repeatCount="indefinite" rotate="auto"><mpath href="#ovArc"/></animateMotion>
+          </path>
+        </svg>
+        <div class="ring"></div>
+      </div>
+      <p id="overlayText" class="overlay-text">Working on it…</p>
+    </div>
+  </div>
+  <main class="app-container">
+    <section class="hero-section">
+      <div class="badge"><span class="badge-dot"></span> TripMate AI</div>
+      <h1>Plan Your Perfect Trip with Al</h1>
+      <p>
+        Describe your trip in a sentence. Our agents search flights and hotels,
+        check the weather and your budget, then send you a draft to approve
+        before the final itinerary is made.
+      </p>
+    </section>
+
+    <section class="planner-card">
+      <div class="pass">
+        <div class="pass-main">
+          <div class="card-header">
+            <div>
+              <h2>Tell us about your trip</h2>
+              <p>Example: Plan a complete 7 days Japan trip from Bangladesh under 2 lakhs.</p>
+            </div>
+            <div class="status-pill"><span class="status-dot"></span> Online</div>
+          </div>
+
+          <textarea
+            id="userInput"
+            placeholder="Plan a complete 7 days Japan trip including flights, hotels and sightseeing under 2 lakhs..."
+          ></textarea>
+
+          <div class="quick-prompts">
+            <button onclick="setPrompt('Plan a complete 7 days Japan trip from Bangladesh including flights, hotels and sightseeing under 2 lakhs.')">🗾 Japan, 7 days</button>
+            <button onclick="setPrompt('Plan a 5 days Dubai trip from Dhaka with flights, hotels and sightseeing.')">🌆 Dubai, 5 days</button>
+            <button onclick="setPrompt('Plan a 7 days Thailand trip from Bangladesh with budget hotels and sightseeing.')">🏝️ Thailand, 7 days</button>
+            <button onclick="setPrompt('Give me all country flight info.')">🌍 Global flights</button>
+          </div>
+        </div>
+
+        <div class="pass-stub">
+          <p class="stub-note">You review a draft first. The final plan is only made after you approve it.</p>
+          <button id="sendBtn" onclick="sendMessage()">
+            <span id="btnText">Generate draft</span>
+            <span id="btnLoader" class="loader hidden"></span>
+          </button>
+          <p class="stub-hint">Ctrl + Enter to send</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflowSection" class="workflow-section hidden">
+      <div class="workflow-header">
+        <div>
+          <span class="eyebrow">Supervisor agent</span>
+          <h2>Your route</h2>
+        </div>
+        <span id="guardrailBadge" class="guardrail-badge">Guardrail passed</span>
+      </div>
+      <p id="supervisorReasoning" class="supervisor-reasoning"></p>
+      <div id="agentChips" class="agent-chips"></div>
+    </section>
+
+    <section id="resultSection" class="result-section hidden">
+      <div class="result-header">
+        <div>
+          <h2 id="resultTitle">Your AI travel plan</h2>
+          <p id="threadInfo">Thread ID: -</p>
+        </div>
+        <div class="result-actions">
+          <button class="copy-btn" onclick="copyResult()">Copy</button>
+          <button class="download-btn" onclick="downloadPDF()">Download PDF</button>
+        </div>
+      </div>
+
+      <div id="pdfContent" class="pdf-content">
+        <h1 class="pdf-title">AI Travel Plan</h1>
+        <div id="resultBox" class="result-box"></div>
+      </div>
+    </section>
+
+    <section id="approvalSection" class="approval-section hidden">
+      <div class="approval-icon">🛂</div>
+      <div class="approval-content">
+        <span class="eyebrow">Your review</span>
+        <h2>Check the draft itinerary</h2>
+        <p id="approvalRequest">
+          Approve the draft or add feedback before the final plan is generated.
+        </p>
+
+        <textarea
+          id="approvalFeedback"
+          class="feedback-input"
+          placeholder="Optional feedback, for example: reduce the hotel cost and add one free day..."
+        ></textarea>
+
+        <div class="approval-actions">
+          <button id="approveBtn" class="approve-btn" onclick="submitApproval(true)">
+            Approve and generate final
+          </button>
+          <button id="reviseBtn" class="revise-btn" onclick="submitApproval(false)">
+            Revise with my feedback
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="errorBox" class="error-box hidden"></section>
+  </main>
+
+  <footer>
+    Built with FastAPI, LangGraph, Groq, PostgreSQL, Tavily, AviationStack and MCP
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="/static/script.js"></script>
+<script src="/static/bg.js"></script>
+</body>
+</html>

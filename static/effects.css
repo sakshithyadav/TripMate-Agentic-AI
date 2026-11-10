@@ -1,0 +1,58 @@
+/* Animated sky background */
+.sky { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.cloud { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.85); filter: blur(36px); animation: drift 70s ease-in-out infinite alternate; }
+.c1 { width: 420px; height: 150px; top: 8%; left: -6%; }
+.c2 { width: 520px; height: 170px; top: 46%; right: -10%; animation-duration: 90s; animation-direction: alternate-reverse; }
+.c3 { width: 360px; height: 130px; bottom: 6%; left: 22%; animation-duration: 80s; }
+.route-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.trail { fill: none; stroke: rgba(31, 79, 255, 0.3); stroke-width: 2; stroke-dasharray: 3 12; stroke-linecap: round; animation: march 3s linear infinite; }
+.jet { fill: var(--cobalt); opacity: 0.55; }
+@keyframes drift { to { transform: translateX(18vw); } }
+@keyframes march { to { stroke-dashoffset: -30; } }
+
+/* Loading overlay: plane in flight for drafts, ring for approve / revise */
+.overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(232, 240, 249, 0.78); backdrop-filter: blur(10px); opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+.overlay.on { opacity: 1; visibility: visible; }
+.overlay-card { width: min(380px, 100%); padding: 26px 24px; text-align: center; background: #fff; border-radius: 24px; box-shadow: 0 24px 60px rgba(14, 31, 58, 0.2); transform: translateY(14px) scale(0.97); transition: transform 0.35s; }
+.overlay.on .overlay-card { transform: none; }
+.overlay-art { height: 110px; display: grid; place-items: center; }
+.fly { width: 100%; height: 110px; }
+.fly .trail { stroke: var(--cobalt); animation-duration: 1.2s; }
+.fly .jet { fill: var(--ink); opacity: 1; }
+.ring { width: 64px; height: 64px; border-radius: 50%; border: 6px solid var(--line); border-top-color: var(--ok); animation: spin 0.9s linear infinite; }
+.overlay[data-mode="revise"] .ring { border-top-color: var(--sun); }
+.overlay[data-mode="draft"] .ring { display: none; }
+.overlay:not([data-mode="draft"]) .fly { display: none; }
+.overlay-text { margin-top: 8px; font-weight: 700; }
+.overlay-text.swap { animation: textIn 0.4s ease-out; }
+@keyframes textIn { from { opacity: 0; transform: translateY(8px); } }
+
+/* Reveals */
+.agent-chip { animation: chipIn 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; animation-delay: calc(var(--i, 0) * 0.14s); }
+@keyframes chipIn { from { opacity: 0; transform: translateY(10px) scale(0.8); } }
+.unfold { transform-origin: top; animation: unfold 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s both; }
+@keyframes unfold { from { opacity: 0; transform: perspective(900px) rotateX(-14deg) translateY(36px); } }
+.attn { animation: glow 1.6s ease-in-out 2; }
+.attn .approval-icon { animation: ping 1.4s ease-out 3; }
+@keyframes glow { 50% { box-shadow: 0 0 0 6px rgba(255, 182, 39, 0.35), 0 10px 30px rgba(14, 31, 58, 0.07); } }
+@keyframes ping { from { box-shadow: 0 0 0 0 rgba(255, 182, 39, 0.7); } to { box-shadow: 0 0 0 22px rgba(255, 182, 39, 0); } }
+
+/* Stamp and confetti after the approval step */
+.stamp { position: fixed; left: 50%; top: 42%; z-index: 60; pointer-events: none; padding: 0.1em 0.5em; border: 6px double currentColor; border-radius: 14px; background: rgba(255, 255, 255, 0.7); font-family: var(--display); font-weight: 800; font-size: clamp(2.2rem, 8vw, 4.5rem); letter-spacing: 0.06em; text-transform: uppercase; animation: stamp 2.3s ease-out both; }
+.stamp.ok { color: var(--ok); }
+.stamp.rev { color: var(--cobalt); }
+@keyframes stamp {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-8deg) scale(2.6); }
+  16% { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(0.94); }
+  22% { transform: translate(-50%, -50%) rotate(-8deg) scale(1); }
+  78% { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(-8deg) scale(1); }
+}
+.confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 70; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud, .jet-g { display: none; }
+  .trail, .agent-chip, .unfold, .attn, .attn .approval-icon, .stamp { animation: none; }
+  .stamp { transform: translate(-50%, -50%) rotate(-8deg); }
+  .overlay, .overlay-card { transition: none; }
+}
