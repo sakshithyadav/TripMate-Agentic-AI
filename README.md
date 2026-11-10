@@ -47,6 +47,9 @@ Unlike traditional AI travel chatbots, TripMate AI incorporates dynamic agent ro
 7. The Final Response Agent generates the polished travel itinerary.
 8. PostgreSQL checkpointing preserves the workflow state for later resumption.
 
+<img width="575" height="627" alt="image" src="https://github.com/user-attachments/assets/fc7b3a6e-8874-40d5-b602-9842ba621a8f" />
+
+
 ## Project Goals
 
 - Explore practical multi-agent AI orchestration.
