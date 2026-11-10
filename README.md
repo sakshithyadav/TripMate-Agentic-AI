@@ -1,24 +1,72 @@
+# ✈️ TripMate AI – Agentic Multi-Agent Travel Planning System
+
+**TripMate AI** is an intelligent, multi-agent travel planning platform that transforms natural-language travel requests into structured, personalized travel itineraries.
+
+Built using **LangGraph, MCP, FastAPI, and Large Language Models (LLMs)**, the system uses a supervisor-driven architecture to coordinate specialized AI agents for flight research, hotel discovery, weather analysis, budget estimation, and itinerary generation.
+
+Unlike traditional AI travel chatbots, TripMate AI incorporates dynamic agent routing, external tool integrations, Human-in-the-Loop approval, persistent workflow checkpointing, and automatic LLM provider fallback to create a more reliable and interactive travel planning experience.
+
+## Key Features
+
+- **Multi-Agent Orchestration:** Supervisor-driven workflow using LangGraph to coordinate specialized travel agents.
+- **Dynamic Agent Routing:** Selects relevant agents based on the user's travel requirements.
+- **MCP Integrations:** Connects with Tavily, AviationStack, and a custom Weather MCP server.
+- **Intelligent Travel Planning:** Generates flight guidance, hotel recommendations, weather insights, budget analysis, and day-by-day itineraries.
+- **Human-in-the-Loop (HITL):** Allows users to review, approve, or request revisions to AI-generated travel plans.
+- **Input Guardrails:** Validates incoming requests to keep the application focused on travel-related tasks.
+- **Persistent Workflow Checkpointing:** Uses PostgreSQL with LangGraph Postgres Checkpointer to preserve workflow state and support resumption.
+- **LLM Failover:** Supports Groq as the primary LLM and local Ollama Gemma4:e2b as a fallback model.
+- **REST API:** FastAPI-based backend for interacting with the multi-agent system.
+
+## Technology Stack
+
+| Category | Technologies |
+|---|---|
+| Language | Python |
+| Agent Orchestration | LangGraph |
+| LLM Integration | LangChain |
+| Primary LLM | Groq |
+| Fallback LLM | Ollama – Gemma4:e2b |
+| Agent Communication & Tools | Model Context Protocol (MCP) |
+| Flight Data | AviationStack |
+| Web Research | Tavily |
+| Weather Information | OpenWeather API via custom MCP server |
+| Backend | FastAPI |
+| Database | PostgreSQL |
+| Workflow Persistence | LangGraph Postgres Checkpointer |
+| Frontend | HTML, CSS, JavaScript |
+
+## System Architecture
+
+1. The user submits a travel request through the web interface.
+2. FastAPI receives and validates the request.
+3. The Supervisor Agent applies input guardrails and determines which specialist agents are required.
+4. Selected agents independently gather relevant information using external MCP tools and LLM reasoning.
+5. The Itinerary Agent combines the available information into a structured travel plan.
+6. The Human-in-the-Loop mechanism pauses execution for user approval or revision feedback.
+7. The Final Response Agent generates the polished travel itinerary.
+8. PostgreSQL checkpointing preserves the workflow state for later resumption.
+
+## Project Goals
+
+- Explore practical multi-agent AI orchestration.
+- Integrate external APIs through MCP.
+- Implement stateful AI workflows using LangGraph.
+- Improve reliability through LLM fallback mechanisms.
+- Introduce human oversight into autonomous AI workflows.
+- Build a modular and extensible AI application.
+
+## Future Enhancements
+
+- Comprehensive agent and workflow evaluation.
+- LLM observability and tracing using Langfuse.
+- Automated routing and response quality benchmarks.
+- Improved retry, timeout, and failure-recovery mechanisms.
+- Authentication, authorization, and scalable deployment.
+- Advanced performance and cost monitoring.
+
+
 # Multi-Agent-System-using-LangGraph-MCP-Supervisor-Guardrails-HITL
-
-A demo multi-agent system that uses LangGraph and MCP to implement a travel-planning assistant with a Supervisor, input Guardrails, and Human-In-The-Loop (HITL) approval flows. The project includes a FastAPI frontend, example MCP server, and client helpers to demonstrate how agents, supervisors, and guardrails can be composed into a safe, reviewable planning pipeline.
-
-Key ideas:
-- Multi-agent coordination using LangGraph and MCP
-- Supervisor agent to manage complex workflows
-- Input guardrails to validate user requests
-- Human-in-the-loop approval for generated plans
-
-Contents
-- `app.py`: FastAPI web frontend and API endpoints
-- `backend.py`: core agent orchestration / travel-planner logic
-- `mcp_client.py`: client helpers to interact with the MCP server
-- `custom_weather_mcp_server.py`: example MCP server for weather checks
-- `templates/`, `static/`: frontend UI assets (HTML, JS, CSS)
-
-Features
-- Interactive web UI for sending travel planning prompts
-- Endpoint for drafting travel plans and separate approval endpoint
-- Example MCP server demonstrating domain adapters (weather, checkpoints)
 
 Prerequisites
 - Python 3.10+ (recommended)
@@ -70,18 +118,8 @@ API Endpoints
 Configuration & environment
 - Secrets and API keys are not included in the repo. Use environment variables or a `.env` file for any required keys consumed by `langgraph`, `langchain`, or other adapters.
 
-Development notes
-- The project keeps synchronous convenience wrappers in `backend.py` while running an async FastAPI server — `nest_asyncio` is applied in `app.py` to allow the sync helpers to call async MCP helpers.
-- Tests are not included; to experiment, interact with the web UI or call the API endpoints directly.
 
-Contributing
-- Contributions are welcome. Please open issues or pull requests for bug fixes, documentation improvements, or new adapter examples.
+## Author
 
-License
-- This repository follows the license in the `LICENSE` file.
+Developed as an exploration of Agentic AI, multi-agent systems, MCP integrations, and production-oriented LLM application architecture.
 
-Acknowledgements
-- Built as a demonstration of LangGraph + MCP patterns with supervisor and guardrail concepts.
-
-Contact
-- For questions or suggestions, open an issue or contact the repository owner.
